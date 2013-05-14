@@ -16,12 +16,14 @@ from velma_calibration.srv import *
 from calibration_object import *
 from calibration_object_detector import *
 
+import cv2util
+
 import tf
 import numpy as np
 import scipy.io as sio
 
 CHECKERBOARD_PATTERN_SIZE = (3,9)
-CHECKERBOARD_SQUARE_SIZE = 0.03
+CHECKERBOARD_SQUARE_SIZE = 0.02
 CHECKERBOARD_NAME = "cb_9x6"
 CHECKERBOARD_CHAIN = "arm_chain"
 
@@ -53,9 +55,9 @@ class DataCollector():
             
         # get joint names for head
         if rospy.has_param("head_controller/joint_names"): # real hardware
-            self.head_joint_names = rospy.get_param("torso_controller/joint_names")
+            self.head_joint_names = rospy.get_param("head_controller/joint_names")
         elif rospy.has_param("head_controller/joints"): # simulation
-            self.head_joint_names = rospy.get_param("torso_controller/joints")
+            self.head_joint_names = rospy.get_param("head_controller/joints")
         else: 
             print "Could not get joint names for torso from parameter server. exiting..."
             exit(-1)
@@ -189,7 +191,7 @@ class DataCollector():
         Callback function for joint angles messages
         '''
         # head
-        if self.head_joint_names in msg.name:
+        if self.head_joint_names[0] in msg.name:
           pos = []
           header = msg.header
           for name in self.head_joint_names:
