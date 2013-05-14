@@ -158,7 +158,7 @@ i_kinect_right.distortion.vec = 0.0;
 
 [R, t] = estimate_initial_extrinsic(stacked_homographies_left(1:3, 1:3), A_left);
 % base2world = left2world * head2left * base2head
-T = inv([R t; 0 0 0 1]) * inv(head2left.transform()) * inv(headFK([head_joints_l{1,1} head_joints_l{1,2}]));
+T = inv([R t; 0 0 0 1]) * inv(head2left.transform()) * inv(headFK([head_joints_l{1}]));
 
 %T = headFK([head_joints_l{1,1} head_joints_l{1,2}]) * head2left.transform()  * [R t; 0 0 0 1];
 

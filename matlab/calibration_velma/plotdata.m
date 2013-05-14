@@ -33,7 +33,7 @@
 %  POSSIBILITY OF SUCH DAMAGE.
 %
 
-p_l = project_points(X.get_random_var(i_left_id), X.get_random_var(base2world_id), X.get_random_var(head2left_id), mtk.SE3(eye(4)), mtk.SE3(headFK([head_joints_l{1,1} head_joints_l{1,2}])), p_world_l{1});
+p_l = project_points(X.get_random_var(i_left_id), X.get_random_var(base2world_id), X.get_random_var(head2left_id), mtk.SE3(eye(4)), mtk.SE3(headFK(head_joints_l{1})), p_world_l{1});
  
 pm_l = reshape(p_l, 2, []);
 figure('Name','Left camera','NumberTitle','off');
@@ -42,7 +42,7 @@ xlabel('px')
 ylabel('py')
 axis equal
 
-p_kl = project_points(X.get_random_var(i_kinect_left_id), X.get_random_var(base2world_id), X.get_random_var(head2left_id), X.get_random_var(left2kinect_left_id), mtk.SE3(headFK([head_joints_kl{1,1} head_joints_kl{1,2}])), p_world_kl{1});
+p_kl = project_points(X.get_random_var(i_kinect_left_id), X.get_random_var(base2world_id), X.get_random_var(head2left_id), X.get_random_var(left2kinect_left_id), mtk.SE3(headFK(head_joints_kl{1})), p_world_kl{1});
 
 pm_kl = reshape(p_kl, 2, []);
 figure('Name','Left kinect','NumberTitle','off');
@@ -51,7 +51,7 @@ xlabel('px')
 ylabel('py')
 axis equal
 
-p_kr = project_points(X.get_random_var(i_kinect_right_id), X.get_random_var(base2world_id), X.get_random_var(head2left_id), X.get_random_var(left2kinect_right_id), mtk.SE3(headFK([head_joints_kr{1,1} head_joints_kr{1,2}])), p_world_kr{1});
+p_kr = project_points(X.get_random_var(i_kinect_right_id), X.get_random_var(base2world_id), X.get_random_var(head2left_id), X.get_random_var(left2kinect_right_id), mtk.SE3(headFK(head_joints_kr{1})), p_world_kr{1});
 
 pm_kr = reshape(p_kr, 2, []);
 figure('Name','Right kinect','NumberTitle','off');

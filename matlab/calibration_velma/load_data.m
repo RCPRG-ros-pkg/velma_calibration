@@ -36,6 +36,6 @@
 close all;
 clear classes;
 
-load test.mat;
+load //tmp/calibration_data.mat;
 
 Sigma_chk = .25; % px
