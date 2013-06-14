@@ -39,7 +39,6 @@ reshaped_p = reshape(p, 3, []);
 
 % Transform into camera coords
 world2cam = inv(x2cam.transform()) * inv(head2x.transform()) * inv(base2head.transform()) * inv(base2world.transform());
-%world2cam = inv(base2world.transform()) * base2head.transform() * head2x.transform() * x2cam.transform();
 p_cam = world2cam(1:3,1:3) * reshaped_p + repmat(world2cam(1:3,4), 1, size(reshaped_p, 2));
 
 % Project onto the image plane

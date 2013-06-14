@@ -64,20 +64,20 @@ left2kinect_right_id = o.add_random_var(left2kinect_right);
 base2world_id = o.add_random_var(base2world); 
 
 for i=1:num_images_left        
-    o.add_measurement(p_img_l{i}(:), @project_points, {i_left_id, base2world_id, head2left_id}, {mtk.SE3(eye(4)), mtk.SE3(headFK(head_joints_l{i})), p_world_l{i}(:)}, Sigma_chk);
+    o.add_measurement(p_img_l{i}(:), @project_points, {i_left_id, base2world_id, head2left_id}, {mtk.SE3(eye(4)), mtk.SE3(headFK([head_joints_l{i}])), p_world_l{i}(:)}, Sigma_chk);
 end
 
 for i=1:num_images_kinect_left
-    o.add_measurement(p_img_kl{i}(:), @project_points, {i_kinect_left_id, base2world_id, head2left_id, left2kinect_left_id}, {mtk.SE3(headFK(head_joints_kl{i})), p_world_kl{i}(:)}, Sigma_chk);
+    o.add_measurement(p_img_kl{i}(:), @project_points, {i_kinect_left_id, base2world_id, head2left_id, left2kinect_left_id}, {mtk.SE3(headFK([head_joints_kl{i}])), p_world_kl{i}(:)}, Sigma_chk);
 end
 
 for i=1:num_images_kinect_right
-    o.add_measurement(p_img_kr{i}(:), @project_points, {i_kinect_right_id, base2world_id, head2left_id, left2kinect_right_id}, {mtk.SE3(headFK(head_joints_kr{i})), p_world_kr{i}(:)}, Sigma_chk);
+    o.add_measurement(p_img_kr{i}(:), @project_points, {i_kinect_right_id, base2world_id, head2left_id, left2kinect_right_id}, {mtk.SE3(headFK([head_joints_kr{i}])), p_world_kr{i}(:)}, Sigma_chk);
 end
 
 
 
-[X] = nrlm(@o.fun, o.X0, [500, 4, 1e-3]); % solve problem
+[X] = nrlm(@o.fun, o.X0, [20, 4, 1e-3]); % solve problem
 
 [r, J, r_orig] = o.fun(X);
 

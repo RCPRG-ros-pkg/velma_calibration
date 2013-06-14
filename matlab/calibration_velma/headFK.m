@@ -34,41 +34,7 @@
 %
 
 function [ trans ] = headFK( q )
-%HEADFK Summary of this function goes here
-%   Detailed explanation goes here
-    %T1 = dh2mat44(0.0, 0.0, 0.0, 0.0);
-    
-    %T2 = dh2mat44(0.0, 0.0, 0.0, -pi/2);
-    
-    %t1 = dh_setangle(T1, q(1));[-0.32044243812561035, 0.8583459258079529]
-    %t2 = dh_setangle(T2, q(2));
-    %trans = t1.m * t2.m;
-    
-    %ca = cos(0);
-    %sa = sin(0);
-    
-%     cb = cos(q(1));
-%     sb = sin(q(1));
-%     
-%     cy = cos(q(2));
-%     sy = sin(q(2));
-%     
-%     m = zeros(4);
-%     m(4, 4) = 1;
-%     
-%     m(1,1) = ca*cb;
-%     m(2,1) = sb*sy - sa*cy;
-%     m(3,1) = ca*sb*cy + sa*sy;
-%     
-%     m(2,1) = sa*cb;
-%     m(2,2) = sa*sb*sy + ca*cy;
-%     m(2,3) = sa*sb*cy - ca*sy;
-%     
-%     m(3,1) = -sb;
-%     m(3,2) = cb*sy;
-%     m(3,3) = cb*cy;
-%     
-%     trans = m;
+%HEADFK Calculate head forward kinematics.
 
 trans = dh2mat44(0.0, q(1), 0.0, -pi/2) * dh2mat44(0.0, q(2), 0.0, 0.0);
 end
