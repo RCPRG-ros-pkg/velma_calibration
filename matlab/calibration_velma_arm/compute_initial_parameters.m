@@ -39,6 +39,11 @@ i_right = intrinsic_t();
 i_kinect_left = intrinsic_t();
 i_kinect_right = intrinsic_t();
 
+armcal_r = armcal_t();
+
+armcal_r.stiffness.vec = [0; 0; 0; 0; 0; 0; 0];
+armcal_r.offset.vec = [0; 0; 0; 0; 0];
+
 % transformation between both cameras
 head2left = mtk.SE3(eye(4));
 head2right = mtk.SE3(eye(4));
@@ -49,8 +54,8 @@ left2kinect_right = mtk.SE3(eye(4));
 wrist2world = mtk.SE3(eye(4));
 arm2base = mtk.SE3(eye(4));
 
-arm2base.pos = [0.279; -0.1; 0.025];
-arm2base.Q = quat2mat33([-0.35355 0.35355 -0.61237 0.61237]);
+arm2base.pos = T_ah; %[0.279; -0.1; 0.025];
+arm2base.Q = quat2mat33(R_ah); %quat2mat33([-0.35355 0.35355 -0.61237 0.61237]);
 
 head2left.pos = T_l;
 head2left.Q = quat2mat33(R_l);
@@ -63,7 +68,7 @@ head2left.Q = z(1:3,1:3);
 left2kinect_left.pos = T_kl;
 left2kinect_left.Q = quat2mat33(R_kl);
 
-z = inv(head2left.transform()) * inv(left2kinect_left.transform());
+z = inv(left2kinect_left.transform()); % inv(head2left.transform()) * inv(left2kinect_left.transform());
 
 left2kinect_left.pos = z(1:3,4);
 left2kinect_left.Q = z(1:3,1:3);
@@ -71,7 +76,7 @@ left2kinect_left.Q = z(1:3,1:3);
 left2kinect_right.pos = T_kr;
 left2kinect_right.Q = quat2mat33(R_kr);
 
-z = inv(head2left.transform()) * inv(left2kinect_right.transform());
+z = inv(left2kinect_right.transform()); %inv(head2left.transform()) * inv(left2kinect_right.transform());
 
 left2kinect_right.pos = z(1:3,4);
 left2kinect_right.Q = z(1:3,1:3);
@@ -125,10 +130,10 @@ A_left = estimate_initial_intrinsic(num_images_left, stacked_homographies_left);
 A_kinect_left = estimate_initial_intrinsic(num_images_kinect_left, stacked_homographies_kinect_left);
 A_kinect_right = estimate_initial_intrinsic(num_images_kinect_right, stacked_homographies_kinect_right);
 
-A_left(1,1) = 1142.59668;
-A_left(2,2) = 1193.55139;
-A_left(1,3) = 663.19184;
-A_left(2,3) = 486.45521;
+A_left(1,1) = i_l(1); % 1113.683349609375;
+A_left(2,2) = i_l(6); % 1176.8858642578125;
+A_left(1,3) = i_l(3); %656.1246996140544;
+A_left(2,3) = i_l(7); %471.8283515878502;
 i_left.focal_length.vec = [A_left(1,1); A_left(2,2)];
 i_left.offset.vec = [A_left(1,3); A_left(2,3)];
 i_left.distortion.vec = 0.0;
@@ -137,19 +142,19 @@ i_right.focal_length.vec = [524.0; 522.0];
 i_right.offset.vec = [293.0; 230.0];
 i_right.distortion.vec = 0.0;
 
-A_kinect_left(1,1) = 530.98779296875;
-A_kinect_left(2,2) = 533.542846679688;
-A_kinect_left(1,3) = 327.953265229211;
-A_kinect_left(2,3) = 265.187574867246;
+A_kinect_left(1,1) = i_kl(1); % 530.98779296875;
+A_kinect_left(2,2) = i_kl(6); % 491.403820;
+A_kinect_left(1,3) = i_kl(3); % 308.936941;
+A_kinect_left(2,3) = i_kl(7); % 265.373722;
 
 i_kinect_left.focal_length.vec = [A_kinect_left(1,1); A_kinect_left(2,2)];
 i_kinect_left.offset.vec = [A_kinect_left(1,3); A_kinect_left(2,3)];
 i_kinect_left.distortion.vec = 0.0;
 
-A_kinect_right(1,1) = 601.696044921875;
-A_kinect_right(2,2) = 610.256958007812;
-A_kinect_right(1,3) = 311.996309254406;
-A_kinect_right(2,3) = 245.403162674575;
+A_kinect_right(1,1) = i_kr(1); % 488.774473;
+A_kinect_right(2,2) = i_kr(6); % 610.256958007812;
+A_kinect_right(1,3) = i_kr(3); % 311.996309254406;
+A_kinect_right(2,3) = i_kr(7); % 245.403162674575;
 
 i_kinect_right.focal_length.vec = [A_kinect_right(1,1); A_kinect_right(2,2)];
 i_kinect_right.offset.vec = [A_kinect_right(1,3); A_kinect_right(2,3)];

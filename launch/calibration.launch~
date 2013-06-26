@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-
-  <node name="data_collector" pkg="velma_calibration" type="data_collector.py">
-
-  </node>
-
-</launch>

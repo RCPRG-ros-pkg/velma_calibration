@@ -156,7 +156,7 @@ class ACirclegridDetector(CalibrationObjectDetector):
         @type  is_grayscale: bool
         '''
         # detect checkerboard
-        found, corners = cv2.findCirclesGridDefault(image, self.calibration_object.pattern_size, flags=cv2.CALIB_CB_ASYMMETRIC_GRID)
+        found, corners = cv2.findCirclesGridDefault(image, self.calibration_object.pattern_size, flags=(cv2.CALIB_CB_ASYMMETRIC_GRID))
         if found:
             return corners
         else:

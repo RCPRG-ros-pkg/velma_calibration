@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <launch>
 
-  <node name="data_collector" pkg="velma_calibration" type="data_collector.py">
-
+  <node name="data_collector" pkg="velma_calibration" type="collect_data.py">
+		<param name="calib_file_path" value="/tmp/calibration_data.mat"/>
   </node>
 
 </launch>

@@ -33,12 +33,14 @@
 %  POSSIBILITY OF SUCH DAMAGE.
 %
 
-function z = project_points(wrist2world, arm2base, head2x, x2cam, base2head, arm2wrist, intrinsic, p)
+function z = project_points(armcal, wrist2world, arm2base, head2x, x2cam, base2head, arm_jnt, arm_trq, intrinsic, p)
 
 reshaped_p = reshape(p, 3, []);
 
+arm_q = arm_jnt + [ 0; armcal.offset.vec; 0] + armcal.stiffness.vec .* arm_trq;
+
 % Transform into camera coords
-world2cam = inv(x2cam.transform()) * inv(head2x.transform()) * inv(base2head.transform()) * inv(arm2base.transform()) * arm2wrist.transform() * inv(wrist2world.transform());
+world2cam = inv(x2cam.transform()) * inv(head2x.transform()) * inv(base2head.transform()) * inv(arm2base.transform()) * armFK(arm_q) * inv(wrist2world.transform());
 p_cam = world2cam(1:3,1:3) * reshaped_p + repmat(world2cam(1:3,4), 1, size(reshaped_p, 2));
 
 % Project onto the image plane

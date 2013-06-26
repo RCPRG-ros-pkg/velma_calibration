@@ -32,17 +32,17 @@
 %  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 %  POSSIBILITY OF SUCH DAMAGE.
 %
-
-p_l = project_points(X.get_random_var(base2world_id), X.get_random_var(head2left_id), mtk.SE3(eye(4)), mtk.SE3(headFK(head_joints_l{1})), i_left, p_world_l{1});
- 
-pm_l = reshape(p_l, 2, []);
-figure('Name','Left camera','NumberTitle','off');
-plot(pm_l(1,:), pm_l(2,:), '*', p_img_l{1}(1,:), p_img_l{1}(2,:), 'r+');
-xlabel('px')
-ylabel('py')
-axis equal
-
-p_kl = project_points(X.get_random_var(base2world_id), X.get_random_var(head2left_id), X.get_random_var(left2kinect_left_id), mtk.SE3(headFK(head_joints_kl{1})), i_kinect_left, p_world_kl{1});
+for i=1:num_images_left 
+  p_l = project_points(X.get_random_var(armcal_r_id), X.get_random_var(wrist2world_id), X.get_random_var(arm2base_id), X.get_random_var(head2left_id), i_left, mtk.SE3(eye(4)), mtk.SE3(headFK(head_joints_l{i})), right_arm_joints_l{i}, right_arm_joints_trq_l{i}, p_world_l{i});
+   
+  pm_l = reshape(p_l, 2, []);
+  figure('Name','Left camera','NumberTitle','on');
+  plot(pm_l(1,:), pm_l(2,:), '*', p_img_l{i}(1,:), p_img_l{i}(2,:), 'r+');
+  xlabel('px')
+  ylabel('py')
+  axis equal
+end
+p_kl = project_points(X.get_random_var(i_kinect_left_id), X.get_random_var(armcal_r_id), X.get_random_var(wrist2world_id), X.get_random_var(arm2base_id), X.get_random_var(head2left_id), X.get_random_var(left2kinect_left_id), mtk.SE3(headFK(head_joints_kl{1})), right_arm_joints_kl{1}, right_arm_joints_trq_kl{1}, p_world_kl{1});
 
 pm_kl = reshape(p_kl, 2, []);
 figure('Name','Left kinect','NumberTitle','off');
@@ -51,7 +51,7 @@ xlabel('px')
 ylabel('py')
 axis equal
 
-p_kr = project_points(X.get_random_var(base2world_id), X.get_random_var(head2left_id), X.get_random_var(left2kinect_right_id), mtk.SE3(headFK(head_joints_kr{1})), i_kinect_right, p_world_kr{1});
+p_kr = project_points(X.get_random_var(i_kinect_right_id), X.get_random_var(armcal_r_id), X.get_random_var(wrist2world_id), X.get_random_var(arm2base_id), X.get_random_var(head2left_id), X.get_random_var(left2kinect_right_id), mtk.SE3(headFK(head_joints_kr{1})), right_arm_joints_kr{1}, right_arm_joints_trq_kr{1}, p_world_kr{1});
 
 pm_kr = reshape(p_kr, 2, []);
 figure('Name','Right kinect','NumberTitle','off');

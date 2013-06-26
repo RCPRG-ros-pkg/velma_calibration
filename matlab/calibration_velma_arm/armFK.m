@@ -37,6 +37,6 @@ function [ trans ] = armFK( q )
 %ARMFK Summary of this function goes here
 %   Detailed explanation goes here
 
-  trans = dh2mat44(0.315, q(1) - pi, 0.0, pi/2) * dh2mat44(0.0, q(2), 0.0, -pi/2) * dh2mat44(0.4, q(3), 0.0, -pi/2) * dh2mat44(0.0, q(4), 0.0, pi/2) * dh2mat44(0.39, q(5), 0.0, pi/2) * dh2mat44(0.0, q(6), 0.0, -pi/2) * dh2mat44(0.078, q(7), 0.0, 0.0);
+  trans = dh2mat44(0.3105, q(1) - pi, 0.0, pi/2) * dh2mat44(0.0, q(2), 0.0, -pi/2) * dh2mat44(0.4, q(3), 0.0, -pi/2) * dh2mat44(0.0, q(4), 0.0, pi/2) * dh2mat44(0.39, q(5), 0.0, pi/2) * dh2mat44(0.0, q(6), 0.0, -pi/2) * dh2mat44(0.078, q(7), 0.0, 0.0);
 end
 

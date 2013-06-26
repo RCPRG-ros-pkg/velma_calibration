@@ -39,11 +39,16 @@ intrinsic_t = mtk.make_compound('focal_length', @mtk.Rn, 2, ...
                                'offset', @mtk.Rn, 2, ...
                                'distortion', @mtk.Rn, 1);
 
+armcal_t = mtk.make_compound('stiffness', @mtk.Rn, 7, ...
+                               'offset', @mtk.Rn, 5);                           
+                           
 % create and init i_left, i_right, left2right, left2imu,  
 % cam2head, p_hand_l, p_hand_r, left2world_for_img
 compute_initial_parameters;
 
 o = mtk.OptimizationProblem();
+
+armcal_r_id = o.add_random_var(armcal_r);
 
 % add intrinsic parameters
 %i_left_id = o.add_random_var(i_left);
@@ -54,8 +59,8 @@ o = mtk.OptimizationProblem();
 % add transformations
  head2left_id = o.add_random_var(head2left); 
 %left2right_id = o.add_random_var(left2right); 
- left2kinect_left_id = o.add_random_var(left2kinect_left);
- left2kinect_right_id = o.add_random_var(left2kinect_right);
+left2kinect_left_id = o.add_random_var(left2kinect_left);
+left2kinect_right_id = o.add_random_var(left2kinect_right);
 
 % add marker positions on hand 
 %p_hand_l_id = o.add_random_var(p_hand_l); 
@@ -63,30 +68,31 @@ o = mtk.OptimizationProblem();
 
 wrist2world_id = o.add_random_var(wrist2world); 
 arm2base_id = o.add_random_var(arm2base); 
-
-for i=1:num_images_left        
-    o.add_measurement(p_img_l{i}(:), @project_points, {wrist2world_id, arm2base_id, head2left_id}, {mtk.SE3(eye(4)), mtk.SE3(headFK([head_joints_l{i}])), mtk.SE3(armFK([right_arm_joints_l{i}])), i_left, p_world_l{i}(:)}, Sigma_chk);
-end
-
-for i=1:num_images_kinect_left
-    o.add_measurement(p_img_kl{i}(:), @project_points, {wrist2world_id, arm2base_id, head2left_id, left2kinect_left_id}, {mtk.SE3(headFK([head_joints_kl{i}])), mtk.SE3(armFK([right_arm_joints_kl{i}])), i_kinect_left, p_world_kl{i}(:)}, Sigma_chk);
-end
-
-for i=1:num_images_kinect_right
-    o.add_measurement(p_img_kr{i}(:), @project_points, {wrist2world_id, arm2base_id, head2left_id, left2kinect_right_id}, {mtk.SE3(headFK([head_joints_kr{i}])), mtk.SE3(armFK([right_arm_joints_kr{i}])), i_kinect_right, p_world_kr{i}(:)}, Sigma_chk);
-end
-
+% 
 % for i=1:num_images_left        
-%     o.add_measurement(p_img_l{i}(:), @project_points, {wrist2world_id, arm2base_id}, {head2left, mtk.SE3(eye(4)), mtk.SE3(headFK([head_joints_l{i}])), mtk.SE3(armFK([right_arm_joints_l{i}])), i_left, p_world_l{i}(:)}, Sigma_chk);
+%     o.add_measurement(p_img_l{i}(:), @project_points, {armcal_r_id, wrist2world_id, arm2base_id, head2left_id}, {mtk.SE3(eye(4)), mtk.SE3(headFK([head_joints_l{i}])), right_arm_joints_l{i}, right_arm_joints_trq_l{i}, i_left, p_world_l{i}(:)}, Sigma_chk);
 % end
 % 
 % for i=1:num_images_kinect_left
-%     o.add_measurement(p_img_kl{i}(:), @project_points, {wrist2world_id, arm2base_id}, {head2left, left2kinect_left, mtk.SE3(headFK([head_joints_kl{i}])), mtk.SE3(armFK([right_arm_joints_kl{i}])), i_kinect_left, p_world_kl{i}(:)}, Sigma_chk);
+%     o.add_measurement(p_img_kl{i}(:), @project_points, {armcal_r_id, wrist2world_id, arm2base_id, head2left_id, left2kinect_left_id}, {mtk.SE3(headFK([head_joints_kl{i}])), right_arm_joints_kl{i}, right_arm_joints_trq_kl{i}, i_kinect_left, p_world_kl{i}(:)}, Sigma_chk);
 % end
 % 
 % for i=1:num_images_kinect_right
-%     o.add_measurement(p_img_kr{i}(:), @project_points, {wrist2world_id, arm2base_id}, {head2left, left2kinect_right, mtk.SE3(headFK([head_joints_kr{i}])), mtk.SE3(armFK([right_arm_joints_kr{i}])), i_kinect_right, p_world_kr{i}(:)}, Sigma_chk);
+%     o.add_measurement(p_img_kr{i}(:), @project_points, {armcal_r_id, wrist2world_id, arm2base_id, head2left_id, left2kinect_right_id}, {mtk.SE3(headFK([head_joints_kr{i}])), right_arm_joints_kr{i}, right_arm_joints_trq_kr{i}, i_kinect_right, p_world_kr{i}(:)}, Sigma_chk);
 % end
+
+
+for i=1:num_images_left        
+    o.add_measurement(p_img_l{i}(:), @project_points, {armcal_r_id, wrist2world_id, arm2base_id, head2left_id}, {mtk.SE3(eye(4)), mtk.SE3(headFK([head_joints_l{i}])), right_arm_joints_l{i}, right_arm_joints_trq_l{i}, i_left, p_world_l{i}(:)}, Sigma_chk);
+end
+
+for i=1:num_images_kinect_left
+    o.add_measurement(p_img_kl{i}(:), @project_points, {armcal_r_id, wrist2world_id, arm2base_id, left2kinect_left_id}, {mtk.SE3(eye(4)), mtk.SE3(headFK([head_joints_kl{i}])), right_arm_joints_kl{i}, right_arm_joints_trq_kl{i}, i_kinect_left, p_world_kl{i}(:)}, Sigma_chk);
+end
+
+for i=1:num_images_kinect_right
+    o.add_measurement(p_img_kr{i}(:), @project_points, {armcal_r_id, wrist2world_id, arm2base_id, left2kinect_right_id}, {mtk.SE3(eye(4)), mtk.SE3(headFK([head_joints_kr{i}])), right_arm_joints_kr{i}, right_arm_joints_trq_kr{i}, i_kinect_right, p_world_kr{i}(:)}, Sigma_chk);
+end
 
 [X] = nrlm(@o.fun, o.X0, [20, 4, 1e-3]); % solve problem
 
@@ -120,10 +126,10 @@ disp(['RMS pattern reprojection error:' num2str(rms_chk)])
 %disp(['left camera -> focal length: ' num2str(i.focal_length.vec') ' offset:  ' num2str(i.offset.vec') ' dist: ' num2str(i.distortion.vec) ] );
 %i = X.get_random_var(i_right_id);
 %disp(['right camera -> focal length: ' num2str(i.focal_length.vec) ' offset:  ' num2str(i.offset.vec') ' dist: ' num2str(i.distortion.vec) ] );
-%i = X.get_random_var(i_kinect_left_id);
-%disp(['left kinect camera -> focal length: ' num2str(i.focal_length.vec') ' offset:  ' num2str(i.offset.vec') ' dist: ' num2str(i.distortion.vec) ] );
-%i = X.get_random_var(i_kinect_right_id);
-%disp(['right kinect camera -> focal length: ' num2str(i.focal_length.vec') ' offset:  ' num2str(i.offset.vec') ' dist: ' num2str(i.distortion.vec) ] );
+% i = X.get_random_var(i_kinect_left_id);
+% disp(['left kinect camera -> focal length: ' num2str(i.focal_length.vec') ' offset:  ' num2str(i.offset.vec') ' dist: ' num2str(i.distortion.vec) ] );
+% i = X.get_random_var(i_kinect_right_id);
+% disp(['right kinect camera -> focal length: ' num2str(i.focal_length.vec') ' offset:  ' num2str(i.offset.vec') ' dist: ' num2str(i.distortion.vec) ] );
 
 
 torso2arm = eye(4);
@@ -148,31 +154,30 @@ disp(['rpy: ' num2str(mat332rpy(t(1:3, 1:3))') ' xyz: ' num2str(t(1:3, 4)')]);
 
 disp('left2kinect_left:');
 e = X.get_random_var(left2kinect_left_id);
-t = T_opt * e.transform() * inv(T_opt);
+t = e.transform() * inv(T_opt);
 disp(['rpy: ' num2str(mat332rpy(t(1:3, 1:3))') ' xyz: ' num2str(t(1:3, 4)')]);
 
 disp('left2kinect_right:');
 e = X.get_random_var(left2kinect_right_id);
-t = T_opt * e.transform() * inv(T_opt);
+t = e.transform() * inv(T_opt);
 disp(['rpy: ' num2str(mat332rpy(t(1:3, 1:3))') ' xyz: ' num2str(t(1:3, 4)')]);
 
-% %disp('left2right:');
-% %e = X.get_random_var(left2right_id);
-% %disp(num2str(e.transform()));
-% 
-% disp('head2left:');
-% e = X.get_random_var(head2left_id);
-% t = e.transform();
-% disp(['rpy: ' num2str(mat332rpy(t(1:3, 1:3))') ' xyz: ' num2str(t(1:3, 4)')]);
-% 
-% disp('left2kinect_left:');
-% e = X.get_random_var(left2kinect_left_id);
-% t = e.transform();
-% disp(['rpy: ' num2str(mat332rpy(t(1:3, 1:3))') ' xyz: ' num2str(t(1:3, 4)')]);
-% 
-% disp('left2kinect_right:');
-% e = X.get_random_var(left2kinect_right_id);
-% t = e.transform();
-% disp(['rpy: ' num2str(mat332rpy(t(1:3, 1:3))') ' xyz: ' num2str(t(1:3, 4)')]);
+% Generate config file
+
+e = X.get_random_var(arm2base_id);
+t = torso2arm * e.transform();
+calibOut('head', 'torso', t);
+
+e = X.get_random_var(head2left_id);
+t = e.transform() * inv(T_opt);
+calibOut('stereo_left', 'head', t);
+
+e = X.get_random_var(left2kinect_left_id);
+t = e.transform() * inv(T_opt);
+calibOut('kinect_left', 'stereo_left', t);
+
+e = X.get_random_var(left2kinect_right_id);
+t = e.transform() * inv(T_opt);
+calibOut('kinect_right', 'stereo_left', t);
 
 plotdata;
